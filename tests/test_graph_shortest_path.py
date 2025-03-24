@@ -78,4 +78,5 @@ def test_multiple_paths():
     path = find_shortest_path(graph, 1, 5)
     assert path is not None
     assert len(path) <= 4  # Ensure path exists and is not excessively long
-    assert any(path in route for route in ([1, 2, 4, 5], [1, 3, 4, 5]))  # Allow both valid paths
+    valid_paths = [[1, 2, 4, 5], [1, 3, 4, 5]]
+    assert path in valid_paths  # Only these paths are valid
