@@ -2,32 +2,54 @@ import pytest
 from src.burrows_wheeler import burrows_wheeler_transform, inverse_burrows_wheeler_transform
 
 def test_burrows_wheeler_transform():
-    # Test round-trip transformation works correctly
-    test_cases = ['banana', 'hello', 'a', 'abracadabra']
+    # Comprehensive test cases covering various scenarios
+    test_cases = [
+        'banana', 
+        'hello', 
+        'a', 
+        'abracadabra', 
+        'python',
+        'compression'
+    ]
     
     for text in test_cases:
+        # Perform BWT
         bwt = burrows_wheeler_transform(text)
+        
         # Validate BWT properties
-        assert len(bwt) >= len(text)
+        assert len(bwt) == len(text) + 1
         assert '$' in bwt
         
-        # Verify round-trip transformation
+        # Perform inverse transform
         reconstructed = inverse_burrows_wheeler_transform(bwt)
-        assert len(reconstructed) == len(text)
-        # Verify characters match exactly (crucial!)
-        assert reconstructed == text
+        
+        # Verify exact reconstruction
+        assert reconstructed == text, f"Failed for input: {text}"
 
 def test_error_handling():
     # Test type errors
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="Input must be a string"):
         burrows_wheeler_transform(123)
     
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="Input must be a string"):
         inverse_burrows_wheeler_transform(123)
     
     # Test empty string errors
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input string cannot be empty"):
         burrows_wheeler_transform('')
     
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input string cannot be empty"):
         inverse_burrows_wheeler_transform('')
+
+def test_edge_cases():
+    # Test single character
+    single_char = 'a'
+    bwt = burrows_wheeler_transform(single_char)
+    reconstructed = inverse_burrows_wheeler_transform(bwt)
+    assert reconstructed == single_char
+
+    # Test repeated characters
+    repeated_chars = 'aaa'
+    bwt = burrows_wheeler_transform(repeated_chars)
+    reconstructed = inverse_burrows_wheeler_transform(bwt)
+    assert reconstructed == repeated_chars
