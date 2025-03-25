@@ -53,44 +53,41 @@ def inverse_burrows_wheeler_transform(bwt):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Ensure terminator is present
+    # Ensure terminator is present and last
     if '$' not in bwt:
         bwt += '$'
     
     # Length of the string
     n = len(bwt)
     
-    # Create first column by sorting
+    # Check that terminator is present
+    if bwt.count('$') != 1:
+        raise ValueError("Invalid Burrows-Wheeler transform")
+    
+    # Create first and last columns
     first_column = sorted(bwt)
     last_column = list(bwt)
     
-    # Tracking character positions
-    char_freq = {}
-    for char in last_column:
-        char_freq[char] = char_freq.get(char, 0) + 1
-    
-    # Remap to track unique positions
-    last_to_first = [0] * n
-    char_counts = {}
-    
-    for i in range(n):
-        char = last_column[i]
-        if char not in char_counts:
-            char_counts[char] = 0
+    # Compute last-to-first column mapping
+    last_to_first = {}
+    first_char_count = {}
+    for i, char in enumerate(last_column):
+        # Track number of occurrences before this index
+        if char not in first_char_count:
+            first_char_count[char] = 0
         
-        # Find position of this specific occurrence in first column
-        current_freq = char_counts[char]
-        current_char_instances = sum(1 for c in first_column[:first_column.index(char) + 1] if c == char)
+        # Find corresponding index in first column
+        match_index = first_column.index(char, sum(1 for c in first_column[:first_column.index(char) + 1] if c == char) - first_char_count[char] - 1)
         
-        last_to_first[i] = first_column.index(char, current_char_instances - current_freq - 1)
-        char_counts[char] += 1
+        last_to_first[i] = match_index
+        first_char_count[char] += 1
     
     # Reconstruct original string
     result = []
     current_index = last_column.index('$')
     
     while len(result) < n - 1:
-        # Get character from last column
+        # Get next character from last column
         current_char = last_column[current_index]
         
         # Skip terminator
@@ -104,5 +101,5 @@ def inverse_burrows_wheeler_transform(bwt):
         # Move to next index
         current_index = last_to_first[current_index]
     
-    # Return reconstructed string in original order
+    # Return reconstructed string
     return ''.join(result)
