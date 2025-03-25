@@ -23,9 +23,9 @@ def test_burrows_wheeler_transform():
         # Perform inverse transform
         reconstructed = inverse_burrows_wheeler_transform(bwt)
         
-        # Basic validation
+        # Verify character count preservation
         assert len(reconstructed) == len(text)
-        assert sorted(list(reconstructed)) == sorted(list(text))
+        assert sorted(reconstructed) == sorted(text)
 
 def test_error_handling():
     # Test type errors
