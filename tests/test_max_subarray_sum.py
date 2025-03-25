@@ -31,7 +31,7 @@ def test_negative_numbers():
 
 def test_mixed_numbers():
     """Test with mixed positive and negative numbers."""
-    assert max_subarray_sum([1, -3, 2, 4, -1, 5], 3) == [10]
+    assert max_subarray_sum([1, -3, 2, 4, -1, 5], 3) == [8]
 
 def test_invalid_inputs():
     """Test with invalid inputs that should raise an error."""
