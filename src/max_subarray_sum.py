@@ -10,6 +10,9 @@ def max_subarray_sum(nums, k):
         list: A list containing the maximum subarray sum if k <= len(nums),
               or an empty list if k > len(nums).
     
+    Raises:
+        TypeError: If nums is not a list or k is not an integer.
+    
     Examples:
         >>> max_subarray_sum([1, 4, 2, 10, 23, 3, 1, 0, 20], 4)
         [39]
@@ -18,8 +21,18 @@ def max_subarray_sum(nums, k):
         >>> max_subarray_sum([1, 2, 3], 4)
         []
     """
+    # Type checking
+    if not isinstance(nums, list):
+        raise TypeError("nums must be a list")
+    if not isinstance(k, int):
+        raise TypeError("k must be an integer")
+    
     # If k is larger than the list length, return an empty list
     if k > len(nums):
+        return []
+    
+    # Special case for empty list
+    if not nums or k == 0:
         return []
     
     # If k is equal to the list length, return the sum of entire list
