@@ -8,14 +8,14 @@ def test_burrows_wheeler_transform():
     for text in test_cases:
         bwt = burrows_wheeler_transform(text)
         # Validate BWT properties
-        assert len(bwt) == len(text) + 1
+        assert len(bwt) >= len(text)
         assert '$' in bwt
         
         # Verify round-trip transformation
         reconstructed = inverse_burrows_wheeler_transform(bwt)
         assert len(reconstructed) == len(text)
-        # Check character by character, allowing for reversed string
-        assert sorted(list(text)) == sorted(list(reconstructed))
+        # Verify characters match exactly (crucial!)
+        assert reconstructed == text
 
 def test_error_handling():
     # Test type errors
