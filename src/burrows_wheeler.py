@@ -19,17 +19,17 @@ def burrows_wheeler_transform(text):
     if not text:
         raise ValueError("Input string cannot be empty")
     
-    # Generate all rotations by adding a unique terminator
+    # Add a unique terminator
     text_with_terminator = text + '$'
     
-    # Compute all rotations
+    # Create rotations
     rotations = [text_with_terminator[i:] + text_with_terminator[:i] 
                  for i in range(len(text_with_terminator))]
     
-    # Sort rotations and get last characters
+    # Sort rotations lexicographically
     sorted_rotations = sorted(rotations)
     
-    # BWT is the last characters of sorted lexicographically
+    # BWT is last characters of sorted rotations
     return ''.join(rotation[-1] for rotation in sorted_rotations)
 
 def inverse_burrows_wheeler_transform(bwt):
@@ -53,25 +53,48 @@ def inverse_burrows_wheeler_transform(bwt):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Remove terminator if present
-    bwt = bwt.replace('$', '')
+    # Ensure terminator is present
+    if '$' not in bwt:
+        bwt += '$'
     
-    # Compute first column by sorting
+    # Create sorted first column
     first_column = sorted(bwt)
     last_column = list(bwt)
     
-    # Reconstruct transform
-    n = len(last_column)
+    # Track character counts
+    char_counts = {}
+    for char in first_column:
+        char_counts[char] = char_counts.get(char, 0) + 1
+    
+    # Create next indices for reconstruction
+    next_indices = [0] * len(last_column)
+    current_counts = {}
+    
+    for i, char in enumerate(last_column):
+        current_counts[char] = current_counts.get(char, 0) + 1
+        next_indices[i] = current_counts[char] - 1
+    
+    # Reconstruct
     result = []
+    current_index = last_column.index('$')
     
-    # Start with first occurrence (lexicographically smallest)
-    current_index = last_column.index(min(last_column))
-    
-    for _ in range(n):
-        # Get current character
-        result.append(last_column[current_index])
+    while len(result) < len(last_column) - 1:
+        # Get character from last column
+        current_char = last_column[current_index]
+        
+        # Skip terminator
+        if current_char == '$':
+            current_index = (current_index + 1) % len(last_column)
+            continue
+        
+        # Add to result
+        result.append(current_char)
         
         # Find next index in first column
-        current_index = first_column.index(last_column[current_index])
+        current_index = first_column.index(current_char, 
+                               first_column.count(current_char[:1]) - 
+                               last_column.count(current_char) + 
+                               last_column[:current_index].count(current_char))
     
-    return ''.join(result[:n])
+    # Return reconstructed text (reversed)
+    return ''.join(result[::-1])
