@@ -21,22 +21,11 @@ def count_anagrams(s: str) -> int:
     if not s or not all(c.islower() for c in s):
         raise ValueError("Input must be a non-empty string with only lowercase letters")
     
-    # Track unique anagram signatures
-    anagram_signatures = set()
+    # Unique anagram signatures based on character counts
+    anagram_signatures = {
+        s[start:start+length]: tuple(sorted(Counter(s[start:start+length]).items())) 
+        for length in range(1, len(s) + 1)
+        for start in range(len(s) - length + 1)
+    }
     
-    # Generate all possible substrings and their sorted representations
-    for length in range(1, len(s) + 1):
-        for start in range(len(s) - length + 1):
-            # Extract substring and create a canonical signature
-            substring = s[start:start+length]
-            
-            # Count occurrences of each character 
-            char_count = [0] * 26
-            for char in substring:
-                char_count[ord(char) - ord('a')] += 1
-            
-            # Create a unique signature based on character counts
-            signature = tuple(char_count)
-            anagram_signatures.add(signature)
-    
-    return len(anagram_signatures)
+    return len(set(anagram_signatures.values()))
