@@ -29,9 +29,6 @@ def burrows_wheeler_transform(text):
     # Sort the rotations lexicographically
     sorted_rotations = sorted(rotations)
     
-    # Find the index of the original string
-    original_index = sorted_rotations.index(text_with_terminator)
-    
     # Extract the last character of each sorted rotation to form BWT
     bwt = ''.join(rotation[-1] for rotation in sorted_rotations)
     
@@ -64,23 +61,31 @@ def inverse_burrows_wheeler_transform(bwt):
     # Create first column by sorting last column
     first_column = sorted(bwt)
     
-    # Create mapping for tracking character positions
-    last_to_first = {}
-    for i, char in enumerate(first_column):
-        if char not in last_to_first:
-            last_to_first[char] = i
+    # Pre-compute next array
+    next_array = {}
+    for i, char in enumerate(bwt):
+        if char not in next_array:
+            next_array[char] = 0
+        next_array[char] += 1
+    
+    # Find first character of original string (terminator)
+    current_index = bwt.index('$')
     
     # Reconstruct the original string
     result = []
-    current_char = '$'
-    
     for _ in range(n - 1):  # Exclude the terminator
-        # Find index of current character in last column
-        current_index = bwt.index(current_char)
-        
-        # Move to the next character in the first column
+        # Get the character from first column
         current_char = first_column[current_index]
         result.append(current_char)
+        
+        # Find next index
+        occurrences = 0
+        for j, char in enumerate(bwt):
+            if char == current_char:
+                if occurrences == next_array[current_char] - 1:
+                    current_index = j
+                    break
+                occurrences += 1
     
     # Reverse the result to get the original string
-    return ''.join(result[::-1]).rstrip('$')
+    return ''.join(result[::-1])
