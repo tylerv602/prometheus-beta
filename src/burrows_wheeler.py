@@ -29,6 +29,9 @@ def burrows_wheeler_transform(text):
     # Sort the rotations lexicographically
     sorted_rotations = sorted(rotations)
     
+    # Find the index of the original string
+    original_index = sorted_rotations.index(text_with_terminator)
+    
     # Extract the last character of each sorted rotation to form BWT
     bwt = ''.join(rotation[-1] for rotation in sorted_rotations)
     
@@ -55,34 +58,29 @@ def inverse_burrows_wheeler_transform(bwt):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Create first and last column for reconstruction
+    # Get the length of the string
     n = len(bwt)
     
-    # Create first column and last column
+    # Create first column by sorting last column
     first_column = sorted(bwt)
-    last_column = list(bwt)
     
-    # Count of each character in the first column
-    char_count = {}
-    for c in first_column:
-        char_count[c] = char_count.get(c, 0) + 1
-    
-    # Create next array to track character ordering
-    next_array = [0] * n
-    char_position = {c: 0 for c in set(first_column)}
-    
-    for i in range(n):
-        char = last_column[i]
-        next_array[i] = char_position[char]
-        char_position[char] += 1
+    # Create mapping for tracking character positions
+    last_to_first = {}
+    for i, char in enumerate(first_column):
+        if char not in last_to_first:
+            last_to_first[char] = i
     
     # Reconstruct the original string
     result = []
-    current_index = last_column.index('$')
+    current_char = '$'
     
     for _ in range(n - 1):  # Exclude the terminator
-        result.append(last_column[current_index])
-        current_index = next_array[current_index]
+        # Find index of current character in last column
+        current_index = bwt.index(current_char)
+        
+        # Move to the next character in the first column
+        current_char = first_column[current_index]
+        result.append(current_char)
     
-    # Reverse and join the result
-    return ''.join(result[::-1])
+    # Reverse the result to get the original string
+    return ''.join(result[::-1]).rstrip('$')
