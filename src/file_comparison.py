@@ -16,17 +16,17 @@ def are_files_identical(file1_path, file2_path):
         PermissionError: If there are permission issues reading the files
         IsADirectoryError: If either path is a directory
     """
-    # Check if files exist
-    if not os.path.exists(file1_path):
-        raise FileNotFoundError(f"First file not found: {file1_path}")
-    if not os.path.exists(file2_path):
-        raise FileNotFoundError(f"Second file not found: {file2_path}")
-
     # Check if paths are files (not directories)
     if os.path.isdir(file1_path):
         raise IsADirectoryError(f"First path is a directory: {file1_path}")
     if os.path.isdir(file2_path):
         raise IsADirectoryError(f"Second path is a directory: {file2_path}")
+
+    # Check if files exist
+    if not os.path.exists(file1_path):
+        raise FileNotFoundError(f"First file not found: {file1_path}")
+    if not os.path.exists(file2_path):
+        raise FileNotFoundError(f"Second file not found: {file2_path}")
 
     # Check file sizes first (quick initial comparison)
     if os.path.getsize(file1_path) != os.path.getsize(file2_path):
