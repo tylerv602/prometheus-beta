@@ -55,28 +55,42 @@ def inverse_burrows_wheeler_transform(bwt):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Remove the terminator for reconstruction
-    if '$' in bwt:
-        bwt = bwt.replace('$', '')
-    
-    # Create sorted first column of the BWT matrix
+    # Sort the last column to create first column
     first_column = sorted(bwt)
-    last_column = list(bwt)
     
-    # Initialize tracking for reconstruction
-    n = len(last_column)
+    # Last-to-first column mapping
+    n = len(bwt)
+    next_indices = [0] * n
+    char_count = {}
+    
+    for i in range(n):
+        char = bwt[i]
+        if char not in char_count:
+            char_count[char] = 0
+        next_indices[i] = char_count[char]
+        char_count[char] += 1
+    
+    # Track original string reconstruction
     reconstructed = []
+    current_index = bwt.index('$')
     
-    # Use last-to-first column mapping
-    current_index = last_column.index(min(last_column))
-    
-    while len(reconstructed) < n:
+    for _ in range(n - 1):  # Exclude terminator
         # Get current character from last column
-        current_char = last_column[current_index]
+        current_char = bwt[current_index]
+        
+        # Skip terminator
+        if current_char == '$':
+            current_index = (current_index + 1) % n
+            continue
+        
+        # Append character to reconstruction
         reconstructed.append(current_char)
         
-        # Find the next index in the first column
-        current_index = first_column.index(current_char)
+        # Find next index in first column
+        current_index = first_column.index(current_char, 
+                               first_column.count(current_char[:1]) - 
+                               bwt.count(current_char) + 
+                               bwt[:current_index].count(current_char))
     
-    # Return the reconstructed string
-    return ''.join(reconstructed)
+    # Return reconstructed string (reversed to maintain order)
+    return ''.join(reconstructed[::-1])
