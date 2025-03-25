@@ -15,15 +15,17 @@ def count_zero_sum_pairs(arr):
     if not isinstance(arr, list):
         raise TypeError("Input must be a list of integers")
 
-    # Use a set for O(n) time complexity
-    seen = set()
+    # Use a dictionary to track counts and prevent overcounting
+    num_counts = {}
     zero_sum_pairs = 0
 
     for num in arr:
-        # If the negation of the current number exists in seen, we found a zero-sum pair
-        if -num in seen:
+        # Check if the negation of the current number exists
+        if -num in num_counts and num_counts[-num] > 0:
             zero_sum_pairs += 1
-        # Add current number to seen set
-        seen.add(num)
+            num_counts[-num] -= 1
+        
+        # Increment or initialize the count for the current number
+        num_counts[num] = num_counts.get(num, 0) + 1
 
     return zero_sum_pairs
