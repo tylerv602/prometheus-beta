@@ -58,34 +58,31 @@ def inverse_burrows_wheeler_transform(bwt):
     # Create first and last column for reconstruction
     n = len(bwt)
     
-    # Sort the characters to create first column
+    # Create first column and last column
     first_column = sorted(bwt)
+    last_column = list(bwt)
     
-    # Create a mapping to track the order of characters
-    next_char = {}
-    for i, char in enumerate(bwt):
-        if char not in next_char:
-            next_char[char] = 0
-        next_char[char] += 1
+    # Count of each character in the first column
+    char_count = {}
+    for c in first_column:
+        char_count[c] = char_count.get(c, 0) + 1
+    
+    # Create next array to track character ordering
+    next_array = [0] * n
+    char_position = {c: 0 for c in set(first_column)}
+    
+    for i in range(n):
+        char = last_column[i]
+        next_array[i] = char_position[char]
+        char_position[char] += 1
     
     # Reconstruct the original string
-    reconstructed = [''] * n
-    current_char = '$'  # Start with terminator
-    for i in range(n - 1, -1, -1):
-        # Find the index of current character in the first column
-        current_index = first_column.index(current_char)
-        
-        # Adjust for multiple occurrences
-        current_index = next_char[current_char] - 1
-        next_char[current_char] -= 1
-        
-        # Add character to reconstruction
-        reconstructed[i] = current_char
-        
-        # Move to next character using last column (BWT)
-        current_char = bwt[current_index]
+    result = []
+    current_index = last_column.index('$')
     
-    # Remove terminator and join
-    original = ''.join(reconstructed).rstrip('$')
+    for _ in range(n - 1):  # Exclude the terminator
+        result.append(last_column[current_index])
+        current_index = next_array[current_index]
     
-    return original
+    # Reverse and join the result
+    return ''.join(result[::-1])
