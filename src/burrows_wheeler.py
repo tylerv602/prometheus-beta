@@ -55,26 +55,36 @@ def inverse_burrows_wheeler_transform(bwt):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Get the length of the string
-    n = len(bwt)
-    
-    # Create first column by sorting last column
+    # Create sorted first column of the BWT matrix
     first_column = sorted(bwt)
     
+    # Initialize tracking for reconstruction
+    n = len(bwt)
+    
+    # Compute the 'next' array and character count
+    next_array = [0] * n
+    char_count = {}
+    for i in range(n):
+        char = bwt[i]
+        if char not in char_count:
+            char_count[char] = 0
+        next_array[i] = char_count[char]
+        char_count[char] += 1
+    
     # Reconstruct the original string
-    next_index = first_column.index('$')
     reconstructed = []
+    current_index = bwt.index('$')
     
     for _ in range(n - 1):  # Exclude the terminator
-        # Get the current character
-        current_char = bwt[next_index]
+        # Get next character from first column
+        current_char = first_column[current_index]
         reconstructed.append(current_char)
         
-        # Find the next index in the first column
-        next_index = first_column.index(current_char, 
-                                        first_column.count(current_char[:1]) - 
-                                        bwt.count(current_char) + 
-                                        bwt[:next_index].count(current_char))
+        # Find the next index in the first column 
+        current_index = first_column.index(current_char, 
+                               first_column.count(current_char[:1]) - 
+                               bwt.count(current_char) + 
+                               bwt[:current_index].count(current_char))
     
-    # Reverse the result to get the original string
-    return ''.join(reconstructed[::-1])
+    # Return the reconstructed string (note: could be reversed depending on rotation)
+    return ''.join(reconstructed[::-1]).rstrip('$')
