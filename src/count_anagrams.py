@@ -29,8 +29,14 @@ def count_anagrams(s: str) -> int:
         for start in range(len(s) - length + 1):
             # Extract substring and create a canonical signature
             substring = s[start:start+length]
-            # Create a string signature representing the character counts
-            signature = ''.join(f'{char}{count}' for char, count in sorted(Counter(substring).items()))
+            
+            # Count occurrences of each character 
+            char_count = [0] * 26
+            for char in substring:
+                char_count[ord(char) - ord('a')] += 1
+            
+            # Create a unique signature based on character counts
+            signature = tuple(char_count)
             anagram_signatures.add(signature)
     
     return len(anagram_signatures)
