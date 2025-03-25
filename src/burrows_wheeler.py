@@ -57,44 +57,52 @@ def inverse_burrows_wheeler_transform(bwt):
     if '$' not in bwt:
         bwt += '$'
     
-    # Create sorted first column
+    # Length of the string
+    n = len(bwt)
+    
+    # Create first column by sorting
     first_column = sorted(bwt)
     last_column = list(bwt)
     
-    # Track character counts
+    # Tracking character positions
+    char_freq = {}
+    for char in last_column:
+        char_freq[char] = char_freq.get(char, 0) + 1
+    
+    # Remap to track unique positions
+    last_to_first = [0] * n
     char_counts = {}
-    for char in first_column:
-        char_counts[char] = char_counts.get(char, 0) + 1
     
-    # Create next indices for reconstruction
-    next_indices = [0] * len(last_column)
-    current_counts = {}
+    for i in range(n):
+        char = last_column[i]
+        if char not in char_counts:
+            char_counts[char] = 0
+        
+        # Find position of this specific occurrence in first column
+        current_freq = char_counts[char]
+        current_char_instances = sum(1 for c in first_column[:first_column.index(char) + 1] if c == char)
+        
+        last_to_first[i] = first_column.index(char, current_char_instances - current_freq - 1)
+        char_counts[char] += 1
     
-    for i, char in enumerate(last_column):
-        current_counts[char] = current_counts.get(char, 0) + 1
-        next_indices[i] = current_counts[char] - 1
-    
-    # Reconstruct
+    # Reconstruct original string
     result = []
     current_index = last_column.index('$')
     
-    while len(result) < len(last_column) - 1:
+    while len(result) < n - 1:
         # Get character from last column
         current_char = last_column[current_index]
         
         # Skip terminator
         if current_char == '$':
-            current_index = (current_index + 1) % len(last_column)
+            current_index = (current_index + 1) % n
             continue
         
-        # Add to result
+        # Append character
         result.append(current_char)
         
-        # Find next index in first column
-        current_index = first_column.index(current_char, 
-                               first_column.count(current_char[:1]) - 
-                               last_column.count(current_char) + 
-                               last_column[:current_index].count(current_char))
+        # Move to next index
+        current_index = last_to_first[current_index]
     
-    # Return reconstructed text (reversed)
-    return ''.join(result[::-1])
+    # Return reconstructed string in original order
+    return ''.join(result)
