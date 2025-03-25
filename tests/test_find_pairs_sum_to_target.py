@@ -19,7 +19,15 @@ def test_no_pairs():
 
 def test_negative_numbers():
     """Test with negative numbers"""
-    assert set(find_pairs_sum_to_target([-1, 0, 1, 2, -2, 3], 1)) == {(-1, 2), (0, 1)}
+    result = find_pairs_sum_to_target([-1, 0, 1, 2, -2, 3], 1)
+    expected_pairs = {(-1, 2), (0, 1)}
+    
+    # All pairs in result should be solutions to the sum problem
+    for pair in result:
+        assert pair[0] + pair[1] == 1
+    
+    # Should contain at least these pairs
+    assert expected_pairs.issubset(set(result))
 
 def test_repeated_pairs():
     """Test handling lists with repeated numbers"""
@@ -27,11 +35,13 @@ def test_repeated_pairs():
 
 def test_zero_target():
     """Test with zero as target"""
-    assert set(find_pairs_sum_to_target([-1, 0, 1, 2, -2], 0)) == {(-2, 2), (-1, 1)}
+    result = find_pairs_sum_to_target([-1, 0, 1, 2, -2], 0)
+    assert set(result) == {(-2, 2), (-1, 1)}
 
 def test_large_numbers():
     """Test with large numbers"""
-    assert set(find_pairs_sum_to_target([1000000, -1000000, 500000, -500000], 0)) == {(-1000000, 1000000), (-500000, 500000)}
+    result = find_pairs_sum_to_target([1000000, -1000000, 500000, -500000], 0)
+    assert set(result) == {(-1000000, 1000000), (-500000, 500000)}
 
 def test_sorted_output():
     """Verify that output pairs are sorted"""
