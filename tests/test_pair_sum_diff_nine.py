@@ -23,9 +23,9 @@ def test_repeated_pairs():
     with open('tests/test_numbers.txt', 'w') as f:
         f.write("1\n10\n1\n10\n")
     
-    # Pairs: (1,10), (1,10)
-    # Sum: (1+10) + (1+10) = 11 + 11 = 22
-    assert sum_pairs_with_diff_nine('tests/test_numbers.txt') == 22
+    # Pairs: (1,10), (1,10), (1,10), (1,10)
+    # Sum: (1+10) + (1+10) + (1+10) + (1+10) = 11 + 11 + 11 + 11 = 44
+    assert sum_pairs_with_diff_nine('tests/test_numbers.txt') == 44
 
 def test_file_not_found():
     # Test file not found error
