@@ -24,12 +24,13 @@ def count_anagrams(s: str) -> int:
     # Track unique anagram signatures
     anagram_signatures = set()
     
-    # Generate all possible anagrams
+    # Generate all possible substrings and their sorted representations
     for length in range(1, len(s) + 1):
         for start in range(len(s) - length + 1):
             # Extract substring and create a canonical signature
             substring = s[start:start+length]
-            signature = ''.join(sorted(substring))
+            # Sort the canonical signature to identify unique anagram structures
+            signature = ''.join(sorted(Counter(substring).items()))
             anagram_signatures.add(signature)
     
     return len(anagram_signatures)
