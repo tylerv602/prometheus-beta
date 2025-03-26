@@ -14,7 +14,10 @@ def find_matrix_coordinates(matrix, target):
         ValueError: If matrix is empty or contains inconsistent row lengths
     """
     # Validate input matrix
-    if not matrix or not isinstance(matrix, list):
+    if not isinstance(matrix, list):
+        raise TypeError("Matrix must be a list")
+    
+    if not matrix:
         raise ValueError("Matrix must be a non-empty 2D list")
     
     # Check matrix consistency
